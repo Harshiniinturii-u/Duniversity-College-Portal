@@ -1,26 +1,32 @@
-version: '3.8'
+version: "3.8"
 services:
-  web:
-    build: .
+  backend:
+    build: ./backend
+    container_name: duniversity-backend
     ports:
-      - "8081:8080"
-    volumes:
-      - .:/var/www/html
-    depends_on:
-      - db
-
-  db:
-    image: mysql:5.7
-    restart: always
+      - "5000:5000"
     environment:
-      MYSQL_ROOT_PASSWORD: rootpass
-      MYSQL_DATABASE: college_portal
-      MYSQL_USER: user
-      MYSQL_PASSWORD: userpass
+      - NODE_ENV=production
+      - MONGO_URI=mongodb://mongo:27017/duniversity
+    depends_on:
+      - mongo
+
+  frontend:
+    build: ./frontend
+    container_name: duniversity-frontend
     ports:
-      - "3306:3306"
+      - "3000:80"
+    depends_on:
+      - backend
+
+  mongo:
+    image: mongo:6
+    container_name: duniversity-mongo
+    restart: always
     volumes:
-      - db_data:/var/lib/mysql
+      - mongo-data:/data/db
+    ports:
+      - "27017:27017"
 
 volumes:
-  db_data:
+  mongo-data:
