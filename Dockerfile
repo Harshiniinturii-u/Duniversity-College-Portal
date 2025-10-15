@@ -1,9 +1,7 @@
-FROM node:18-alpine as build
-WORKDIR /app
-COPY package*.json ./
-RUN npm install
-COPY . .
-FROM nginx:stable-alpine
-COPY --from=build /app/build /usr/share/nginx/html
-EXPOSE 80
-CMD ["nginx", "-g", "daemon off;"]
+FROM php:8.1-apache
+RUN docker-php-ext-install mysqli
+RUN a2enmod rewrite
+COPY . /var/www/html/
+RUN chown -R www-data:www-data /var/www/html \
+    && chmod -R 755 /var/www/html
+EXPOSE 8081
